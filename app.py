@@ -309,14 +309,6 @@ SIDEBAR_CSS = """
         padding-top: 10px;
     }
     
-    /* Hide Streamlit default elements */
-    .stSidebar .st-emotion-cache-1cypcdb {
-        display: none !important;
-    }
-    .stSidebar .st-emotion-cache-6qob1r {
-        padding-top: 0 !important;
-    }
-    
     /* Sidebar buttons */
     .stButton > button {
         background: rgba(79, 141, 255, 0.08) !important;
