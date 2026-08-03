@@ -1,4 +1,4 @@
-# auth.py - Login & Sign Up UI (Fixed)
+# auth.py - Login & Sign Up UI (HTML Version - Mobile Friendly)
 import streamlit as st
 import streamlit.components.v1 as components
 import json
@@ -8,9 +8,7 @@ from data_manager import save_users_db, save_session
 
 # ============= AUTH FUNCTIONS =============
 
-# ===== Helper function for profile picture =====
 def get_profile_picture(username):
-    """Get profile picture from users_db"""
     users = st.session_state.get("users_db", {})
     if username in users:
         profile = users[username].get("profile", {})
@@ -18,7 +16,6 @@ def get_profile_picture(username):
     return None
 
 def init_auth_session():
-    """Initialize session state for auth"""
     if 'logged_in' not in st.session_state:
         st.session_state.logged_in = False
     if 'username' not in st.session_state:
@@ -38,8 +35,6 @@ def init_auth_session():
     if 'profile_pic' not in st.session_state:
         st.session_state.profile_pic = None
     
-    # ===== 👇 FIX: Load from JSON files =====
-    # Load goals from goals.json
     if os.path.exists("goals.json"):
         try:
             with open("goals.json", "r", encoding='utf-8') as f:
@@ -49,7 +44,6 @@ def init_auth_session():
     else:
         st.session_state.goals = {}
     
-    # Load notes from notes.json
     if os.path.exists("notes.json"):
         try:
             with open("notes.json", "r", encoding='utf-8') as f:
@@ -59,7 +53,6 @@ def init_auth_session():
     else:
         st.session_state.notes = {}
     
-    # Load users from file if exists
     if os.path.exists("users.json"):
         try:
             with open("users.json", "r") as f:
@@ -67,16 +60,13 @@ def init_auth_session():
         except:
             st.session_state.users_db = {}
     
-    # ===== 👇 FIX: Load user's goals and notes from users_db =====
     username = st.session_state.get("username")
     if username and username in st.session_state.users_db:
-        # Load learning_progress
         if "learning_progress" in st.session_state.users_db[username]:
             st.session_state.learning_progress[username] = st.session_state.users_db[username]["learning_progress"]
         else:
             st.session_state.learning_progress[username] = {}
         
-        # Load goals and notes from users_db
         if "goals" in st.session_state.users_db[username]:
             st.session_state.goals[username] = st.session_state.users_db[username]["goals"]
         else:
@@ -87,14 +77,11 @@ def init_auth_session():
         else:
             st.session_state.notes[username] = []
         
-        # 👇 Load profile picture
         pic = get_profile_picture(username)
         if pic:
             st.session_state.profile_pic = pic
 
-# ===== LOAD/SAVE GOALS & NOTES =====
 def load_goals():
-    """Load goals from goals.json file"""
     goals_file = "goals.json"
     if os.path.exists(goals_file):
         try:
@@ -105,7 +92,6 @@ def load_goals():
     return {}
 
 def load_notes():
-    """Load notes from notes.json file"""
     notes_file = "notes.json"
     if os.path.exists(notes_file):
         try:
@@ -116,14 +102,11 @@ def load_notes():
     return {}
 
 def save_goals():
-    """Save goals to goals.json file and users_db"""
     goals_file = "goals.json"
     try:
-        # Save to goals.json
         with open(goals_file, 'w', encoding='utf-8') as f:
             json.dump(st.session_state.get("goals", {}), f, indent=2, ensure_ascii=False)
         
-        # Also save to users_db
         username = st.session_state.get("username")
         if username and username in st.session_state.users_db:
             st.session_state.users_db[username]["goals"] = st.session_state.goals.get(username, [])
@@ -133,14 +116,11 @@ def save_goals():
         return False
 
 def save_notes():
-    """Save notes to notes.json file and users_db"""
     notes_file = "notes.json"
     try:
-        # Save to notes.json
         with open(notes_file, 'w', encoding='utf-8') as f:
             json.dump(st.session_state.get("notes", {}), f, indent=2, ensure_ascii=False)
         
-        # Also save to users_db
         username = st.session_state.get("username")
         if username and username in st.session_state.users_db:
             st.session_state.users_db[username]["notes"] = st.session_state.notes.get(username, [])
@@ -150,7 +130,6 @@ def save_notes():
         return False
 
 def save_users():
-    """Save users to JSON file"""
     try:
         with open("users.json", "w", encoding='utf-8') as f:
             json.dump(st.session_state.users_db, f, indent=2, ensure_ascii=False)
@@ -159,14 +138,12 @@ def save_users():
         return False
 
 def save_learning_progress():
-    """Save learning progress to users_db"""
     username = st.session_state.get("username")
     if username and username in st.session_state.users_db:
         st.session_state.users_db[username]["learning_progress"] = st.session_state.learning_progress.get(username, {})
         save_users()
 
 def handle_login(username_or_email, password):
-    """Handle login - username or Gmail"""
     users = st.session_state.users_db
     
     if username_or_email in users:
@@ -174,13 +151,11 @@ def handle_login(username_or_email, password):
             st.session_state.logged_in = True
             st.session_state.username = username_or_email
             
-            # Load user's data
             if "learning_progress" in users[username_or_email]:
                 st.session_state.learning_progress[username_or_email] = users[username_or_email]["learning_progress"]
             else:
                 st.session_state.learning_progress[username_or_email] = {}
             
-            # Load goals and notes from users_db
             if "goals" in users[username_or_email]:
                 st.session_state.goals[username_or_email] = users[username_or_email]["goals"]
             else:
@@ -191,7 +166,6 @@ def handle_login(username_or_email, password):
             else:
                 st.session_state.notes[username_or_email] = []
             
-            # 👇 Load profile picture
             pic = get_profile_picture(username_or_email)
             if pic:
                 st.session_state.profile_pic = pic
@@ -212,7 +186,6 @@ def handle_login(username_or_email, password):
                 else:
                     st.session_state.learning_progress[username] = {}
                 
-                # Load goals and notes from users_db
                 if "goals" in users[username]:
                     st.session_state.goals[username] = users[username]["goals"]
                 else:
@@ -223,7 +196,6 @@ def handle_login(username_or_email, password):
                 else:
                     st.session_state.notes[username] = []
                 
-                # 👇 Load profile picture
                 pic = get_profile_picture(username)
                 if pic:
                     st.session_state.profile_pic = pic
@@ -235,10 +207,7 @@ def handle_login(username_or_email, password):
     
     return False, "Username or Email not found!"
 
-# auth.py - Signup function
-
 def handle_signup(username, email, password, confirm_password):
-    """Handle signup with complete profile"""
     users = st.session_state.users_db
     
     if not username or not email or not password:
@@ -264,7 +233,7 @@ def handle_signup(username, email, password, confirm_password):
             "name": username,
             "email": email,
             "bio": "Study Planner learner",
-            "profile_pic": None,  # Start with no profile picture
+            "profile_pic": None,
             "theme": "Light",
             "notifications": True,
             "study_hours": "4:00",
@@ -277,7 +246,7 @@ def handle_signup(username, email, password, confirm_password):
 
 # ============= AUTH SCREEN =============
 def auth_screen():
-    """Show login/signup page with HTML UI (Full Screen)"""
+    """Show login/signup page with HTML UI (Full Screen - Mobile Friendly)"""
     
     # Hide sidebar when showing auth
     st.markdown("""
@@ -291,12 +260,6 @@ def auth_screen():
         }
         .stApp > div:first-child {
             padding: 0 !important;
-        }
-        .stApp {
-            background: radial-gradient(circle at top left, #b6d8ff 0%, #eef6ff 45%, #ffffff 100%) !important;
-        }
-        [data-testid="stSidebar"] {
-            display: none !important;
         }
         .main > div {
             padding: 0 !important;
@@ -461,8 +424,7 @@ def auth_screen():
 
 html, body {{
     width: 100%;
-    height: 100%;
-    overflow: hidden;
+    min-height: 100%;
     margin: 0;
     padding: 0;
     background: radial-gradient(circle at top left, #b6d8ff 0%, #eef6ff 45%, #ffffff 100%);
@@ -472,13 +434,12 @@ body {{
     display: flex;
     justify-content: center;
     align-items: center;
-    padding: 25px;
+    padding: 20px;
 }}
 
 .container {{
     width: 100%;
     max-width: 1450px;
-    max-height: 700px;
     display: flex;
     gap: 25px;
     border-radius: 40px;
@@ -490,7 +451,6 @@ body {{
     position: relative;
     box-shadow: 0 30px 80px rgba(0, 0, 0, .08);
     padding: 0;
-
 }}
 
 .left {{
@@ -621,7 +581,6 @@ body {{
     align-items: center;
     gap: 18px;
     padding: 20px 10px;
-    margin-bottom:290px;
 }}
 
 .progress-card {{
@@ -631,7 +590,6 @@ body {{
     border-radius: 25px;
     padding: 22px 24px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, .08);
-    
 }}
 
 .progress-header {{
@@ -695,7 +653,7 @@ body {{
 .exam-card {{
     width: 100%;
     max-width: 280px;
-   background: rgba(255, 255, 255, .8);
+    background: rgba(255, 255, 255, .8);
     border-radius: 25px;
     padding: 14px 22px;
     box-shadow: 0 20px 50px rgba(0, 0, 0, .08);
@@ -734,7 +692,6 @@ body {{
     display: flex;
     justify-content: center;
     align-items: center;
-    
 }}
 
 .login-card {{
@@ -894,8 +851,6 @@ body {{
     font-size: 16px;
 }}
 
-
-
 .auth-link {{
     color: #4f8dff;
     font-weight: 700;
@@ -914,6 +869,7 @@ body {{
     color: #7b8797;
 }}
 
+/* ========== MOBILE RESPONSIVE ========== */
 @media (max-width: 1200px) {{
     .container {{
         flex-wrap: wrap;
@@ -940,6 +896,7 @@ body {{
     }}
     .login-card {{
         max-width: 450px;
+        margin-right: 0;
     }}
     .progress-card, .exam-card {{
         max-width: 300px;
@@ -947,44 +904,141 @@ body {{
 }}
 
 @media (max-width: 768px) {{
-    .hero h1 {{
-        font-size: 32px;
+    .container {{
+        flex-direction: column !important;
+        padding: 15px !important;
+        border-radius: 25px !important;
+        min-height: auto !important;
     }}
-    .feature-grid {{
-        grid-template-columns: 1fr 1fr;
-    }}
-    .feature {{
-        height: auto;
-        padding: 14px;
-    }}
-    .login-card {{
-        padding: 25px 20px;
-    }}
-    .login-card h2 {{
-        font-size: 24px;
+    .left {{
+        padding: 20px !important;
+        flex: 1 1 auto !important;
     }}
     .middle {{
-        flex-direction: column;
-        align-items: center;
+        flex-direction: row !important;
+        flex-wrap: wrap !important;
+        justify-content: center !important;
+        padding: 10px !important;
+        gap: 12px !important;
     }}
     .progress-card, .exam-card {{
-        max-width: 100%;
+        max-width: 100% !important;
+        padding: 16px 18px !important;
+    }}
+    .progress-stats {{
+        gap: 8px !important;
+    }}
+    .progress-stats .stat-item .number {{
+        font-size: 18px !important;
+    }}
+    .right {{
+        padding: 10px !important;
+        width: 100% !important;
+        flex: 1 1 auto !important;
+    }}
+    .login-card {{
+        max-width: 100% !important;
+        padding: 25px 20px !important;
+        margin-right: 0 !important;
+        border-radius: 20px !important;
+    }}
+    .login-card h2 {{
+        font-size: 24px !important;
+    }}
+    .hero h1 {{
+        font-size: 30px !important;
+    }}
+    .hero p {{
+        font-size: 13px !important;
+    }}
+    .feature-grid {{
+        grid-template-columns: 1fr 1fr !important;
+        gap: 8px !important;
+    }}
+    .feature {{
+        width: 100% !important;
+        height: auto !important;
+        padding: 10px !important;
+        gap: 10px !important;
+        border-radius: 14px !important;
+    }}
+    .feature i {{
+        font-size: 16px !important;
+    }}
+    .feature h3 {{
+        font-size: 12px !important;
+    }}
+    .feature p {{
+        font-size: 10px !important;
+    }}
+    .logo h2 {{
+        font-size: 22px !important;
+    }}
+    .logo-box {{
+        width: 46px !important;
+        height: 46px !important;
+        font-size: 20px !important;
+    }}
+    .login-btn {{
+        height: 44px !important;
+        font-size: 14px !important;
+    }}
+    .input {{
+        height: 42px !important;
+        font-size: 13px !important;
     }}
 }}
 
 @media (max-width: 480px) {{
-    .feature-grid {{
-        grid-template-columns: 1fr;
-    }}
-    .social-buttons {{
-        flex-direction: column;
+    body {{
+        padding: 8px !important;
     }}
     .container {{
-        padding: 10px;
-        border-radius: 20px;
+        padding: 10px !important;
+        border-radius: 18px !important;
     }}
-    body {{
-        padding: 10px;
+    .left {{
+        padding: 15px !important;
+    }}
+    .hero h1 {{
+        font-size: 24px !important;
+    }}
+    .hero p {{
+        font-size: 12px !important;
+        margin-top: 10px !important;
+    }}
+    .feature-grid {{
+        grid-template-columns: 1fr !important;
+    }}
+    .login-card {{
+        padding: 20px 15px !important;
+    }}
+    .login-card h2 {{
+        font-size: 20px !important;
+    }}
+    .login-icon {{
+        width: 50px !important;
+        height: 50px !important;
+        font-size: 22px !important;
+        margin-bottom: 12px !important;
+    }}
+    .logo h2 {{
+        font-size: 18px !important;
+    }}
+    .logo-box {{
+        width: 38px !important;
+        height: 38px !important;
+        font-size: 16px !important;
+    }}
+    .social-buttons {{
+        flex-direction: column !important;
+        gap: 6px !important;
+    }}
+    .form-group label {{
+        font-size: 12px !important;
+    }}
+    .signup-link {{
+        font-size: 12px !important;
     }}
 }}
         </style>
