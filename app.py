@@ -6,6 +6,7 @@ import os
 import json
 import streamlit.components.v1 as components
 from datetime import datetime
+import streamlit.components.v1 as components
 
 sys.path.append(os.getcwd())
 
@@ -106,6 +107,45 @@ components.html("""
         btn.onclick = toggleSidebar;
         parentDoc.body.appendChild(btn);
     }
+</script>
+""", height=0, width=0)
+# ---------- iOS TOGGLE FIX ----------
+components.html("""
+<script>
+    // iOS Toggle Fix - Force visibility and touch
+    setTimeout(function() {
+        var btn = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+        if (btn) {
+            btn.style.display = 'flex';
+            btn.style.visibility = 'visible';
+            btn.style.opacity = '1';
+            btn.style.zIndex = '999999';
+            btn.style.padding = '14px 18px';
+            btn.style.margin = '10px';
+            btn.style.minWidth = '50px';
+            btn.style.minHeight = '50px';
+            btn.style.background = 'rgba(255,255,255,0.95)';
+            btn.style.borderRadius = '12px';
+            btn.style.border = '2px solid rgba(79,141,255,0.3)';
+            btn.style.boxShadow = '0 4px 16px rgba(79,141,255,0.2)';
+            btn.style.touchAction = 'manipulation';
+            btn.style.cursor = 'pointer';
+            
+            // Fix for iOS touch
+            btn.addEventListener('touchstart', function(e) {
+                this.click();
+                e.preventDefault();
+            }, {passive: false});
+            
+            // Fix for iOS click
+            btn.addEventListener('click', function(e) {
+                this.style.transform = 'scale(0.9)';
+                setTimeout(function() {
+                    btn.style.transform = 'scale(1)';
+                }, 200);
+            });
+        }
+    }, 1000);
 </script>
 """, height=0, width=0)
 
