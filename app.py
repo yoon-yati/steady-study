@@ -112,10 +112,15 @@ components.html("""
 # ---------- iOS TOGGLE FIX ----------
 components.html("""
 <script>
-    // iOS Toggle Fix - Force visibility and touch
+    // iOS Fix - Force toggle button to work
     setTimeout(function() {
-        var btn = document.querySelector('[data-testid="stSidebarCollapsedControl"]');
+        // Find all possible toggle buttons
+        var btn = document.querySelector('[data-testid="stSidebarCollapsedControl"]') || 
+                  document.querySelector('button[aria-label="Collapse sidebar"]') ||
+                  document.querySelector('[data-testid="stSidebar"] button');
+        
         if (btn) {
+            // Make it visible and touchable
             btn.style.display = 'flex';
             btn.style.visibility = 'visible';
             btn.style.opacity = '1';
@@ -131,13 +136,13 @@ components.html("""
             btn.style.touchAction = 'manipulation';
             btn.style.cursor = 'pointer';
             
-            // Fix for iOS touch
+            // iOS touch fix
             btn.addEventListener('touchstart', function(e) {
-                this.click();
                 e.preventDefault();
+                this.click();
             }, {passive: false});
             
-            // Fix for iOS click
+            // Visual feedback
             btn.addEventListener('click', function(e) {
                 this.style.transform = 'scale(0.9)';
                 setTimeout(function() {
@@ -145,7 +150,7 @@ components.html("""
                 }, 200);
             });
         }
-    }, 1000);
+    }, 500);
 </script>
 """, height=0, width=0)
 
