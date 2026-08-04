@@ -915,6 +915,7 @@ body {{
         flex: 1 1 auto !important;
     }}
     .middle {{
+        display: flex !important;
         flex-direction: row !important;
         flex-wrap: wrap !important;
         justify-content: center !important;
@@ -923,7 +924,7 @@ body {{
     }}
     .progress-card, .exam-card {{
         max-width: 100% !important;
-        padding: 16px 18px !important;
+        padding: 12px 16px !important;
     }}
     .progress-stats {{
         gap: 8px !important;
@@ -1191,4 +1192,5 @@ body {{
     </html>
     """
     
-    components.html(html_content, height=850, scrolling=False)
+    # ✅ scrolling=True နဲ့ height ကိုပြင်ပါ
+    components.html(html_content, height=800, scrolling=True)
