@@ -293,6 +293,21 @@ def auth_screen():
         .stDeployButton {
             display: none !important;
         }
+            /* iPhone Specific Fix */
+@supports (-webkit-touch-callout: none) {
+    .container {
+        min-height: 100vh !important;
+        max-height: none !important;
+        overflow-y: auto !important;
+        -webkit-overflow-scrolling: touch !important;
+    }
+    .login-card {
+        margin-bottom: 30px !important;
+    }
+    .right {
+        padding-bottom: 40px !important;
+    }
+}
     </style>
     """, unsafe_allow_html=True)
     
@@ -1193,4 +1208,4 @@ body {{
     """
     
     # ✅ scrolling=True နဲ့ height ကိုပြင်ပါ
-    components.html(html_content, height=800, scrolling=True)
+    components.html(html_content, height=1000, scrolling=True)
